@@ -2,9 +2,9 @@
 export default {
   transforms: [
     {
-      test: (path) => /\.(t|j)sx$/.test(path),
+      test: (path) => /\.(t|j)s(x)?$/.test(path),
       transform(code, _, isBuild, path) {
-        if (isBuild  || process.env.NODE_ENV === 'production') return code;
+        if (isBuild  || process.env.NODE_ENV === 'production' || path.includes('@modules')) return code;
 
         const spec = JSON.stringify(path);
 
@@ -24,9 +24,11 @@ export default {
           const prevRefreshSig = window.$RefreshSig$ || (() => {});
 
           const module = {};
+          let hasComponents = false;
 
           window.$RefreshReg$ = (type, id) => {
             module[type.name] = type;
+            if (isComponent(type.name)) hasComponents = true;
           }
 
           window.$RefreshSig$ = () => {
@@ -41,10 +43,9 @@ export default {
           ${result.code}
 
           if (__DEV__) {
-            window.$RefreshReg$ = prevRefreshReg
-            window.$RefreshSig$ = prevRefreshSig
+            window.$RefreshReg$ = prevRefreshReg;
+            window.$RefreshSig$ = prevRefreshSig;
             hot.accept((m) => {
-              console.log('HOT');
               try {
                 for (let i in m) {
                   compareSignatures(module[i], m[i]);
