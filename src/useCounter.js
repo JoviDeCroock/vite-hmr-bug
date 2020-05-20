@@ -4,6 +4,6 @@ export const useCounter = (initialValue) => {
   const [state, setState] = useState(initialValue || 0);
   return [
     state,
-    () => setState(state + 2)
+    () => setState(state + 1)
   ]
 }
