@@ -45,15 +45,18 @@ export default {
           if (__DEV__) {
             window.$RefreshReg$ = prevRefreshReg;
             window.$RefreshSig$ = prevRefreshSig;
-            hot.accept((m) => {
-              try {
-                for (let i in m) {
-                  compareSignatures(module[i], m[i]);
+            if (hasComponents) {
+              hot.accept((m) => {
+                console.log('[PREFRESH] | in the hot callback for: ', ${spec});
+                try {
+                  for (let i in m) {
+                    compareSignatures(module[i], m[i]);
+                  }
+                } catch (e) {
+                  window.location.reload();
                 }
-              } catch (e) {
-                window.location.reload();
-              }
-            });
+              });
+            }
           }
         `;
       }
